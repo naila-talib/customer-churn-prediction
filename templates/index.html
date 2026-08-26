@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <header class="hero">
+        <h1>📊 Customer Churn Prediction AI</h1>
+        <p>Machine Learning system for predicting customer churn risk.</p>
+    </header>
+
+    {% if prediction is not none %}
+    <section class="result-card {% if prediction == 1 %}danger{% else %}success{% endif %}">
+        {% if prediction == 1 %}
+            <h2>⚠️ Customer is likely to CHURN</h2>
+        {% else %}
+            <h2>✅ Customer is likely to STAY</h2>
+        {% endif %}
+        <div class="probability">{{ "%.1f"|format(probability) }}%</div>
+        <p>Churn Probability</p>
+        <span class="risk">Risk Level: {{ risk }}</span>
+    </section>
+    {% endif %}
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <section class="card">
+        <h2>👤 Customer Information</h2>
+        <form method="POST">
+            <div class="form-grid">
+                {% for feature in features %}
+                    <label>
+                        {{ feature }}
+                        {% if feature in options %}
+                            <select name="{{ feature }}">
+                                {% for item in options[feature] %}
+                                    <option value="{{ item }}"
+                                        {% if values[feature] == item %}selected{% endif %}>
+                                        {{ item }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <input type="number" step="any" name="{{ feature }}"
+                                   value="{{ values[feature] }}">
+                        {% endif %}
+                    </label>
+                {% endfor %}
+            </div>
+            <button type="submit">🔮 Predict Customer Churn</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>📈 Model Performance</h2>
+        <div class="metrics">
+            <div class="metric"><h3>Accuracy</h3><strong>{{ "%.2f"|format(metrics.best_model_metrics.accuracy * 100) }}%</strong></div>
+            <div class="metric"><h3>Precision</h3><strong>{{ "%.2f"|format(metrics.best_model_metrics.precision * 100) }}%</strong></div>
+            <div class="metric"><h3>Recall</h3><strong>{{ "%.2f"|format(metrics.best_model_metrics.recall * 100) }}%</strong></div>
+            <div class="metric"><h3>F1 Score</h3><strong>{{ "%.2f"|format(metrics.best_model_metrics.f1 * 100) }}%</strong></div>
+            <div class="metric"><h3>ROC-AUC</h3><strong>{{ "%.3f"|format(metrics.best_model_metrics.roc_auc) }}</strong></div>
+            <div class="metric"><h3>Best Model</h3><strong class="small">{{ metrics.best_model }}</strong></div>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>📊 Model Analysis</h2>
+        <div class="graphs">
+            <div class="graph-card">
+                <h3>Churn Distribution</h3>
+                <img src="{{ url_for('static', filename='graphs/churn_distribution.png') }}" alt="Churn distribution">
+            </div>
+            <div class="graph-card">
+                <h3>Confusion Matrix</h3>
+                <img src="{{ url_for('static', filename='graphs/confusion_matrix.png') }}" alt="Confusion matrix">
+            </div>
+            <div class="graph-card">
+                <h3>ROC Curve</h3>
+                <img src="{{ url_for('static', filename='graphs/roc_curve.png') }}" alt="ROC curve">
+            </div>
+            <div class="graph-card">
+                <h3>Feature Importance</h3>
+                <img src="{{ url_for('static', filename='graphs/feature_importance.png') }}" alt="Feature importance">
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>🤖 End-to-End Machine Learning Project</p>
+        <p>Customer Churn Prediction</p>
+    </footer>
+
+</div>
+</body>
+</html>
